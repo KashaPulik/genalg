@@ -11,7 +11,7 @@
 
 using namespace std;
 
-#define N_CITIES 100
+enum options { n_cities_opt, population_size_opt, mutation_percent_opt, n_iterations_opt };
 
 double wtime()
 {
@@ -331,7 +331,7 @@ int make_area(int n_cities)
     return 0;
 }
 
-pair<double, int> experiment_1ver(int n_cities, int population_size, int n_iterations, int mutation_percent)
+pair<double, int> experiment(int n_cities, int population_size, int n_iterations, int mutation_percent)
 {
     srand(0);
 
@@ -345,57 +345,73 @@ pair<double, int> experiment_1ver(int n_cities, int population_size, int n_itera
     return make_pair(time, result_fitness);
 }
 
-pair<double, int> experiment_2ver(int n_cities, int population_size, int n_iterations, int mutation_percent)
-{
-    srand(0);
-
-    vector<int> cities_list = path;
-
-    vector<individual> population;
-    double time = -wtime();
-    population = find_shortest_path_with_correction(population_size, cities_list, mutation_percent);
-    time += wtime();
-    int result_fitness = population[0].fitness();
-    return make_pair(time, result_fitness);
-}
-
-int main()
+void make_experiment(int n_cities, int population_size, int mutation_percent, int n_iterations, int step, options option, string filename)
 {
     pair<double, int> result;
-    ofstream file("data.csv");
-    int n_cities = 100;
-    int population_size = 8;
-    int mutation_percent = 100;
-    int n_iterations = 1000;
-
-    file << left << setw(20) << "n_cities" << setw(20) << "population_size" << setw(20) << "mutation_percent" << setw(20) << "n_iterations" << setw(20) << "time" << setw(20) << "path_len" << setw(20)
-         << "accuracy" << endl;
+    ofstream file(filename);
+    cout << filename << ":\n";
     cout << left << setw(20) << "n_cities" << setw(20) << "population_size" << setw(20) << "mutation_percent" << setw(20) << "n_iterations" << setw(20) << "time" << setw(20) << "path_len" << setw(20)
          << "accuracy" << endl;
+    file << left << setw(20) << "n_cities" << setw(20) << "population_size" << setw(20) << "mutation_percent" << setw(20) << "n_iterations" << setw(20) << "time" << setw(20) << "path_len" << setw(20)
+         << "accuracy" << endl;
+    bool experiment_done = false;
+    int end_value;
 
-    // for (n_iterations = 0; n_iterations <= 100000; n_iterations += 10000) {
-    //     result = experiment_1ver(n_cities, population_size, n_iterations, mutation_percent);
-    //     file << left << setw(20) << n_cities << setw(20) << population_size << setw(20) << mutation_percent << setw(20) << n_iterations << setw(20) << result.first << setw(20) << result.second
-    //          << setw(20) << ((double)n_cities / (double)result.second) * 100 << endl;
-    //     cout << left << setw(20) << n_cities << setw(20) << population_size << setw(20) << mutation_percent << setw(20) << n_iterations << setw(20) << result.first << setw(20) << result.second
-    //          << setw(20) << ((double)n_cities / (double)result.second) * 100 << endl;
-    // }
+    switch (option) {
+    case n_cities_opt:
+        end_value = n_cities;
+        n_cities = step;
+        break;
+    case population_size_opt:
+        end_value = population_size;
+        population_size = step;
+        break;
+    case mutation_percent_opt:
+        end_value = mutation_percent;
+        mutation_percent = 0;
+        break;
+    case n_iterations_opt:
+        end_value = n_iterations;
+        n_iterations = step;
+        break;
+    }
 
-    // for (mutation_percent = 0; mutation_percent <= 100; mutation_percent += 5) {
-    //     result = experiment_1ver(n_cities, population_size, n_iterations, mutation_percent);
-    //     file << left << setw(20) << n_cities << setw(20) << population_size << setw(20) << mutation_percent << setw(20) << n_iterations << setw(20) << result.first << setw(20) << result.second
-    //          << setw(20) << ((double) n_cities / (double)result.second) * 100 << endl;
-    //     cout << left << setw(20) << n_cities << setw(20) << population_size << setw(20) << mutation_percent << setw(20) << n_iterations << setw(20) << result.first << setw(20) << result.second
-    //          << setw(20) << (100.0 / (double)result.second) * 100 << endl;
-    // }
-
-    for (population_size = 10; population_size <= 100; population_size += 5) {
-        result = experiment_1ver(n_cities, population_size, n_iterations, mutation_percent);
+    while (!experiment_done) {
+        result = experiment(n_cities, population_size, n_iterations, mutation_percent);
         file << left << setw(20) << n_cities << setw(20) << population_size << setw(20) << mutation_percent << setw(20) << n_iterations << setw(20) << result.first << setw(20) << result.second
              << setw(20) << ((double)n_cities / (double)result.second) * 100 << endl;
         cout << left << setw(20) << n_cities << setw(20) << population_size << setw(20) << mutation_percent << setw(20) << n_iterations << setw(20) << result.first << setw(20) << result.second
              << setw(20) << ((double)n_cities / (double)result.second) * 100 << endl;
+        switch (option) {
+        case n_cities_opt:
+            n_cities += step;
+            if (n_cities > end_value)
+                experiment_done = true;
+            break;
+        case population_size_opt:
+            population_size += step;
+            if (population_size > end_value)
+                experiment_done = true;
+            break;
+        case mutation_percent_opt:
+            mutation_percent += step;
+            if (mutation_percent > end_value)
+                experiment_done = true;
+            break;
+        case n_iterations_opt:
+            n_iterations += step;
+            if (n_iterations > end_value)
+                experiment_done = true;
+            break;
+        }
     }
-
     file.close();
+}
+
+int main()
+{
+    make_experiment(100, 4, 100, 10000, 10, n_cities_opt, "n_iterations_exp.csv");
+    make_experiment(100, 100, 100, 10000, 5, population_size_opt, "n_iterations_exp.csv");
+    make_experiment(100, 4, 100, 10000, 1, mutation_percent_opt, "n_iterations_exp.csv");
+    make_experiment(100, 4, 100, 50000, 1000, n_iterations_opt, "n_iterations_exp.csv");
 }
