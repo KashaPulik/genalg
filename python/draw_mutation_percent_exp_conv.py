@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('mutation_percent_exp.csv', delimiter='\s+')
+data = pd.read_csv('/home/pahansan/genalg/data/mutation_percent_exp.csv', delimiter='\s+')
 
 n_cities = data['n_cities']
 population_size = data['population_size']
@@ -21,4 +21,4 @@ plt.title('Сходимость алгоритма при разном проц�
 plt.legend()
 
 plt.grid(True)
-plt.savefig('mutation_percent_conv_graph.png')
+plt.savefig('/home/pahansan/genalg/conv_graphs/mutation_percent_conv_graph.png')

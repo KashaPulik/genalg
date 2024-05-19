@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('n_iterations_exp.csv', delimiter='\s+')
+data = pd.read_csv('/home/pahansan/genalg/data/n_iterations_exp.csv', delimiter='\s+')
 
 n_cities = data['n_cities']
 population_size = data['population_size']
@@ -21,4 +21,4 @@ plt.title('Сходимость алгоритма при разном колч�
 plt.legend()
 
 plt.grid(True)
-plt.savefig('n_iterations_conv_graph.png')
+plt.savefig('/home/pahansan/genalg/conv_graphs/n_iterations_conv_graph.png')

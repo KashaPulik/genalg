@@ -410,8 +410,8 @@ void make_experiment(int n_cities, int population_size, int mutation_percent, in
 
 int main()
 {
-    make_experiment(100, 4, 100, 10000, 10, n_cities_opt, "n_cities_exp.csv");
-    make_experiment(100, 100, 100, 10000, 5, population_size_opt, "population_size_exp.csv");
-    make_experiment(100, 4, 100, 10000, 1, mutation_percent_opt, "mutation_percent_exp.csv");
-    make_experiment(100, 4, 100, 50000, 1000, n_iterations_opt, "n_iterations_exp.csv");
+    make_experiment(100, 4, 100, 10000, 10, n_cities_opt, "/home/pahansan/genalg/data/n_cities_exp.csv");
+    make_experiment(100, 100, 100, 10000, 5, population_size_opt, "/home/pahansan/genalg/data/population_size_exp.csv");
+    make_experiment(100, 4, 100, 10000, 1, mutation_percent_opt, "/home/pahansan/genalg/data/mutation_percent_exp.csv");
+    make_experiment(100, 4, 100, 50000, 1000, n_iterations_opt, "/home/pahansan/genalg/data/n_iterations_exp.csv");
 }

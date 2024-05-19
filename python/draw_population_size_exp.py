@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 
-data = pd.read_csv('population_size_exp.csv', delimiter='\s+')
+data = pd.read_csv('/home/pahansan/genalg/data/population_size_exp.csv', delimiter='\s+')
 
 n_cities = data['n_cities']
 population_size = data['population_size']
@@ -21,4 +21,4 @@ plt.title('Зависимость времени выполнения от ра�
 plt.legend()
 
 plt.grid(True)
-plt.savefig('population_size_graph.png')
+plt.savefig('/home/pahansan/genalg/time_graphs/population_size_graph.png')
