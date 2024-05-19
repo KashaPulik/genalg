@@ -13,12 +13,12 @@ accuracy = data['accuracy']
 
 plt.figure(figsize=(10, 6))
 
-plt.plot(n_iterations, time, label='T(N)')
+plt.plot(n_iterations, accuracy, label='T(N)')
 
 plt.xlabel('Количество поколений N')
-plt.ylabel('Время, с')
-plt.title('Зависимость времени выполнения от количества поколений\nПроцент мутаций: 100%, Количество городов: 100, Особей в популяции: 4')
+plt.ylabel('Точность, %')
+plt.title('Сходимость алгоритма при разном колчестве поколений\nПроцент мутаций: 100%, Количество городов: 100, Особей в популяции: 4')
 plt.legend()
 
 plt.grid(True)
-plt.savefig('n_iterations_graph.png')
+plt.savefig('n_iterations_conv_graph.png')

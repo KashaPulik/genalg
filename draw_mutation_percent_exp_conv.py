@@ -13,12 +13,12 @@ accuracy = data['accuracy']
 
 plt.figure(figsize=(10, 6))
 
-plt.plot(mutation_percent, time, label='T(MP)')
+plt.plot(mutation_percent, accuracy, label='T(MP)')
 
 plt.xlabel('Процент мутаций')
-plt.ylabel('Время, с')
-plt.title('Зависимость времени выполнения от процента мутаций\nКоличество точек: 100, Количество поколений: 10000, Особей в популяции: 4')
+plt.ylabel('Точность, %')
+plt.title('Сходимость алгоритма при разном проценте мутаций\nКоличество точек: 100, Количество поколений: 10000, Особей в популяции: 4')
 plt.legend()
 
 plt.grid(True)
-plt.savefig('mutation_percent_graph.png')
+plt.savefig('mutation_percent_conv_graph.png')

@@ -13,12 +13,12 @@ accuracy = data['accuracy']
 
 plt.figure(figsize=(10, 6))
 
-plt.plot(n_cities, time, label='T(N)')
+plt.plot(n_cities, accuracy, label='T(N)')
 
 plt.xlabel('Количество городов N')
-plt.ylabel('Время, с')
-plt.title('Зависимость времени выполнения от количества городов\nПроцент мутаций: 100%, Количество поколений: 10000, Особей в популяции: 4')
+plt.ylabel('Точность, %')
+plt.title('Сходимость алгоритма при разном количестве городов\nПроцент мутаций: 100%, Количество поколений: 10000, Особей в популяции: 4')
 plt.legend()
 
 plt.grid(True)
-plt.savefig('n_cities_graph.png')
+plt.savefig('n_cities_conv_graph.png')
