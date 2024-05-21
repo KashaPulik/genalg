@@ -1,5 +1,6 @@
 #include <algorithm>
 #include <cstdlib>
+#include <cstring>
 #include <fstream>
 #include <iomanip>
 #include <iostream>
@@ -11,7 +12,12 @@
 
 using namespace std;
 
-enum options { n_cities_opt, population_size_opt, mutation_percent_opt, n_iterations_opt };
+enum options {
+    n_cities_opt,
+    population_size_opt,
+    mutation_percent_opt,
+    n_iterations_opt
+};
 
 double wtime()
 {
@@ -121,7 +127,10 @@ public:
             for (auto& city_b : cities) {
                 if (city_a.get_name() == city_b.get_name())
                     continue;
-                cout << city_a.get_name() << " --> " << city_b.get_name() << " : " << get_city_road(city_a.get_name(), city_b.get_name()) << endl;
+                cout << city_a.get_name() << " --> " << city_b.get_name()
+                     << " : "
+                     << get_city_road(city_a.get_name(), city_b.get_name())
+                     << endl;
             }
     }
     void clear()
@@ -146,7 +155,8 @@ public:
     individual() : genome_size(0)
     {
     }
-    individual(vector<int> new_genome, int size) : genome(new_genome), genome_size(size)
+    individual(vector<int> new_genome, int size)
+        : genome(new_genome), genome_size(size)
     {
     }
     int add_chromosome(int chromosome)
@@ -176,9 +186,9 @@ public:
     {
         return genome_size;
     }
-    int fitness() const
+    size_t fitness() const
     {
-        int length = 0;
+        size_t length = 0;
         int prev = -1;
         int count = 0;
         for (auto& chromosome : genome) {
@@ -243,7 +253,14 @@ void crossing(vector<individual>& population, int mutation_chance)
     population.push_back(child_b);
 }
 
-vector<individual> make_initial_population(size_t population_size, vector<int> genome)
+void selection(vector<individual>& population, size_t population_size)
+{
+    sort(population.begin(), population.end());
+    population.erase(population.begin() + population_size, population.end());
+}
+
+vector<individual>
+make_initial_population(size_t population_size, vector<int> genome)
 {
     individual adam(genome, genome.size());
     individual eva(genome, genome.size());
@@ -255,35 +272,23 @@ vector<individual> make_initial_population(size_t population_size, vector<int> g
     while (population.size() < population_size)
         crossing(population, 100);
 
-    sort(population.begin(), population.end());
-
-    population.erase(population.begin() + population_size, population.end());
+    selection(population, population_size);
 
     return population;
 }
 
-vector<individual> find_shortest_path(int population_size, vector<int> cities_list, int n_iterations, int mutation_percent)
+vector<individual> find_shortest_path(
+        int population_size,
+        vector<int> cities_list,
+        int n_iterations,
+        int mutation_percent)
 {
-    vector<individual> population = make_initial_population(population_size, cities_list);
+    vector<individual> population
+            = make_initial_population(population_size, cities_list);
     for (int i = 0; i < n_iterations; i++) {
         crossing(population, mutation_percent);
-        sort(population.begin(), population.end());
-        population.erase(population.begin() + population_size, population.end());
+        selection(population, population_size);
     }
-    return population;
-}
-
-vector<individual> find_shortest_path_with_correction(int population_size, vector<int> cities_list, int mutation_percent)
-{
-    vector<individual> population = make_initial_population(population_size, cities_list);
-    int n = 0;
-    while (population[0].fitness() != population[population_size - 1].fitness()) {
-        n++;
-        crossing(population, mutation_percent);
-        sort(population.begin(), population.end());
-        population.erase(population.begin() + population_size, population.end());
-    }
-    cout << n << endl;
     return population;
 }
 
@@ -300,7 +305,8 @@ int get_right_path(size_t path_len)
         cities_list.push_back(i);
     }
     for (size_t i = 0; i < path_len; i++)
-        swap(path[rand() % (path_len - 1) + 1], path[rand() % (path_len - 1) + 1]);
+        swap(path[rand() % (path_len - 1) + 1],
+             path[rand() % (path_len - 1) + 1]);
 
     return 0;
 }
@@ -331,7 +337,11 @@ int make_area(int n_cities)
     return 0;
 }
 
-pair<double, int> experiment(int n_cities, int population_size, int n_iterations, int mutation_percent)
+pair<double, int> experiment(
+        int n_cities,
+        int population_size,
+        int n_iterations,
+        int mutation_percent)
 {
     srand(0);
 
@@ -339,20 +349,32 @@ pair<double, int> experiment(int n_cities, int population_size, int n_iterations
 
     vector<individual> population;
     double time = -wtime();
-    population = find_shortest_path(population_size, cities_list, n_iterations, mutation_percent);
+    population = find_shortest_path(
+            population_size, cities_list, n_iterations, mutation_percent);
     time += wtime();
     int result_fitness = population[0].fitness();
     return make_pair(time, result_fitness);
 }
 
-void make_experiment(int n_cities, int population_size, int mutation_percent, int n_iterations, int step, options option, string filename)
+void make_experiment(
+        int n_cities,
+        int population_size,
+        int mutation_percent,
+        int n_iterations,
+        int step,
+        options option,
+        string filename)
 {
     pair<double, int> result;
     ofstream file(filename);
     cout << filename << ":\n";
-    cout << left << setw(20) << "n_cities" << setw(20) << "population_size" << setw(20) << "mutation_percent" << setw(20) << "n_iterations" << setw(20) << "time" << setw(20) << "path_len" << setw(20)
+    cout << left << setw(20) << "n_cities" << setw(20) << "population_size"
+         << setw(20) << "mutation_percent" << setw(20) << "n_iterations"
+         << setw(20) << "time" << setw(20) << "path_len" << setw(20)
          << "accuracy" << endl;
-    file << left << setw(20) << "n_cities" << setw(20) << "population_size" << setw(20) << "mutation_percent" << setw(20) << "n_iterations" << setw(20) << "time" << setw(20) << "path_len" << setw(20)
+    file << left << setw(20) << "n_cities" << setw(20) << "population_size"
+         << setw(20) << "mutation_percent" << setw(20) << "n_iterations"
+         << setw(20) << "time" << setw(20) << "path_len" << setw(20)
          << "accuracy" << endl;
     bool experiment_done = false;
     int end_value;
@@ -374,14 +396,23 @@ void make_experiment(int n_cities, int population_size, int mutation_percent, in
         end_value = n_iterations;
         n_iterations = step;
         break;
+    default:
+        return;
     }
 
     while (!experiment_done) {
-        result = experiment(n_cities, population_size, n_iterations, mutation_percent);
-        file << left << setw(20) << n_cities << setw(20) << population_size << setw(20) << mutation_percent << setw(20) << n_iterations << setw(20) << result.first << setw(20) << result.second
-             << setw(20) << ((double)n_cities / (double)result.second) * 100 << endl;
-        cout << left << setw(20) << n_cities << setw(20) << population_size << setw(20) << mutation_percent << setw(20) << n_iterations << setw(20) << result.first << setw(20) << result.second
-             << setw(20) << ((double)n_cities / (double)result.second) * 100 << endl;
+        result = experiment(
+                n_cities, population_size, n_iterations, mutation_percent);
+        file << left << setw(20) << n_cities << setw(20) << population_size
+             << setw(20) << mutation_percent << setw(20) << n_iterations
+             << setw(20) << result.first << setw(20) << result.second
+             << setw(20) << ((double)n_cities / (double)result.second) * 100
+             << endl;
+        cout << left << setw(20) << n_cities << setw(20) << population_size
+             << setw(20) << mutation_percent << setw(20) << n_iterations
+             << setw(20) << result.first << setw(20) << result.second
+             << setw(20) << ((double)n_cities / (double)result.second) * 100
+             << endl;
         switch (option) {
         case n_cities_opt:
             n_cities += step;
@@ -408,10 +439,56 @@ void make_experiment(int n_cities, int population_size, int mutation_percent, in
     file.close();
 }
 
-int main()
+int main(int argc, char* argv[])
 {
-    make_experiment(100, 4, 100, 10000, 10, n_cities_opt, "/home/pahansan/genalg/data/n_cities_exp.csv");
-    make_experiment(100, 100, 100, 10000, 5, population_size_opt, "/home/pahansan/genalg/data/population_size_exp.csv");
-    make_experiment(100, 4, 100, 10000, 1, mutation_percent_opt, "/home/pahansan/genalg/data/mutation_percent_exp.csv");
-    make_experiment(100, 4, 100, 50000, 1000, n_iterations_opt, "/home/pahansan/genalg/data/n_iterations_exp.csv");
+    if (argc < 2)
+        return 1;
+    if (strcmp(argv[1], "1") == 0) {
+        make_experiment(
+                100,
+                4,
+                100,
+                10000,
+                10,
+                n_cities_opt,
+                "/home/pahansan/genalg/data/n_cities_exp.csv");
+        make_experiment(
+                100,
+                100,
+                100,
+                10000,
+                5,
+                population_size_opt,
+                "/home/pahansan/genalg/data/population_size_exp.csv");
+        make_experiment(
+                100,
+                4,
+                100,
+                10000,
+                1,
+                mutation_percent_opt,
+                "/home/pahansan/genalg/data/mutation_percent_exp.csv");
+        make_experiment(
+                100,
+                4,
+                100,
+                50000,
+                1000,
+                n_iterations_opt,
+                "/home/pahansan/genalg/data/n_iterations_exp.csv");
+    }
+    if (strcmp(argv[1], "2") == 0) {
+        make_area(20);
+        vector<individual> population
+                = find_shortest_path(4, cities_list, 1000, 100);
+        srand(0);
+        int i = 0;
+        while (population[0].fitness() != cities_list.size()) {
+            population = find_shortest_path(4, cities_list, 1000, 100);
+            i++;
+        }
+        cout << "fitness = " << population[0].fitness() << endl;
+        cout << i << endl;
+    }
+    return 0;
 }
